@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class PlayerInputs : MonoBehaviour {
 
-    public CombatController controller;
+    public CombatController Controller;
 
-    private Vector2 combatInput;
+    private Vector2 _combatInput;
 
     //Swipe Variables
-    private float startTime;
-    private Vector2 startPos;
-    private float minSwipeDist = 0.1f;
-    private float maxSwipeTime = 1f;
-    private bool isSwipeValid;
+    private float _startTime;
+    private Vector2 _startPos;
+    private readonly float _minSwipeDist = 0.1f;
+    private readonly float _maxSwipeTime = 1f;
+    private bool _isSwipeValid;
 
 	void Start ()
     {
@@ -23,17 +23,21 @@ public class PlayerInputs : MonoBehaviour {
 	void Update ()
     {
 #if UNITY_EDITOR
-    combatInput = KeyboardCheck();
+        _combatInput = KeyboardCheck();
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Controller.SwitchMode();
+        }
 #elif UNITY_ANDROID
     combatInput = SwipeCheck();
 #endif
 
-        if (combatInput.x > 0)
-            controller.normalizedAttack = Direction.Right;
-        else if (combatInput.x < 0)
-            controller.normalizedAttack = Direction.Left;
+        if (_combatInput.x > 0)
+            Controller.NormalizedAttack = Direction.Right;
+        else if (_combatInput.x < 0)
+            Controller.NormalizedAttack = Direction.Left;
         else
-            controller.normalizedAttack = Direction.None;
+            Controller.NormalizedAttack = Direction.None;
     }
 
     private Vector2 SwipeCheck()
@@ -45,26 +49,26 @@ public class PlayerInputs : MonoBehaviour {
             switch (touch.phase)
             {
                 case TouchPhase.Began:
-                    isSwipeValid = true;
-                    startPos = touch.position;
-                    startTime = Time.time;
+                    _isSwipeValid = true;
+                    _startPos = touch.position;
+                    _startTime = Time.time;
                     break;
                 case TouchPhase.Stationary:
-                    isSwipeValid = false;
+                    _isSwipeValid = false;
                     break;
                 case TouchPhase.Ended:
-                    float swipeTime = Time.time - startTime;
-                    float swipeDist = (touch.position - startPos).magnitude;
-                    if (isSwipeValid && swipeTime < maxSwipeTime && swipeDist > minSwipeDist)
+                    float swipeTime = Time.time - _startTime;
+                    float swipeDist = (touch.position - _startPos).magnitude;
+                    if (_isSwipeValid && swipeTime < _maxSwipeTime && swipeDist > _minSwipeDist)
                     {
-                        return (touch.position - startPos).normalized;
+                        return (touch.position - _startPos).normalized;
                     }
                     break;
             }
         }
         else
         {
-            isSwipeValid = false;
+            _isSwipeValid = false;
         }
 
         return Vector2.zero;

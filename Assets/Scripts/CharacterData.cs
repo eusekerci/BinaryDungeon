@@ -3,29 +3,29 @@
 [Serializable]
 public class CharacterData
 {
-    private int maxHP;
-    public int MaxHP
+    private int _maxHp;
+    public int MaxHp
     {
         get
         {
-            return maxHP;
+            return _maxHp;
         }
         set
         {
-            maxHP = value;
+            _maxHp = value;
         }
     }
 
-    private int hp;
-    public int HP
+    private int _hp;
+    public int Hp
     {
         get
         {
-            return hp;
+            return _hp;
         }
         set
         {
-            hp = value;
+            _hp = value;
         }
     }
 
