@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Policy;
 using UnityEngine;
 
-public class CombatController : MonoBehaviour {
+public class CombatController : MonoBehaviour
+{
+    [SerializeField] private int _attackingFrames;
+    [SerializeField] private int _currentAttackingFrames;
+    [SerializeField] private int _attackedFrames;
+    [SerializeField] private int _currentAttackedFrames;
 
     public enum CombatStates
     {
@@ -24,30 +30,14 @@ public class CombatController : MonoBehaviour {
         Defensive
     }
 
-    [Serializable]
-    public class AttackParams
-    {
-        public float AttackSpeed;
-        public float AttackAgainSpeed;
-        public int AttackingFrames;
-        public int CurrentAttackingFrames;
-        public int AttackedFrames;
-        public int CurrentAttackedFrames;
-    }
-
-    public AttackParams AttackVars = new AttackParams();
-
-    [SerializeField]
-    private CharacterData _playerData;
-    [SerializeField]
-    private CombatStates _currentState;
-    [SerializeField]
-    private CombatMode _currentMode;
-    [SerializeField]
-    private Direction _currentCombatDirection;
+    [SerializeField] private CharacterData _playerData;
+    [SerializeField] private CombatStates _currentState;
+    [SerializeField] private CombatMode _currentMode;
+    [SerializeField] private Direction _currentCombatDirection;
 
     public Action<Direction> OnAttack;
     public Action<Direction> OnDefense;
+    public Action<Direction> OnDamaged;
 
     public Direction NormalizedAttack;
 
@@ -93,6 +83,16 @@ public class CombatController : MonoBehaviour {
         return _currentMode == CombatMode.Defensive;
     }
 
+    public Direction GetDirection()
+    {
+        return _currentCombatDirection;
+    }
+
+    public CharacterData GetCharacterData()
+    {
+        return _playerData;
+    }
+
     private void ChangeState(CombatStates newState)
     {
         _currentState = newState;
@@ -106,40 +106,45 @@ public class CombatController : MonoBehaviour {
     public void SwitchMode()
     {
         _currentMode = IsOffensive() ? CombatMode.Defensive : CombatMode.Offensive;
+        _currentState = CombatStates.Idle;
     }
 
     private void UpdateFrames()
     {
-        AttackVars.CurrentAttackedFrames--;
-        AttackVars.CurrentAttackingFrames--;
+        _currentAttackedFrames--;
+        _currentAttackingFrames--;
     }
 
-    private void Start ()
+    private void Start()
     {
-        _playerData = new CharacterData();
-        AttackVars.AttackingFrames = GetFrameCount(AttackVars.AttackSpeed);
-        AttackVars.AttackedFrames = GetFrameCount(AttackVars.AttackAgainSpeed);
+        _attackingFrames = GameManager.GetFrameCount(_playerData.AttackSpeed);
+        _attackedFrames = GameManager.GetFrameCount(_playerData.AttackAgainSpeed);
         _currentMode = CombatMode.Offensive;
     }
-	
-	private void FixedUpdate ()
-	{
-	    UpdateFrames();
+
+    private void FixedUpdate()
+    {
+        UpdateFrames();
         UpdateState();
+        //Debug.Log(_currentState + "  " + _currentCombatDirection + "  " + _currentMode);
     }
 
     private void UpdateState()
     {
         if (IsOffensive())
         {
-            if (IsAttacking() && AttackVars.CurrentAttackingFrames <= 0)
+            if (IsAttacking() && _currentAttackingFrames <= 0)
             {
                 ChangeState(CombatStates.Attacked);
-                AttackVars.CurrentAttackedFrames = AttackVars.AttackedFrames;
+                _currentAttackedFrames = _attackedFrames;
                 return;
             }
-            if (IsAttacked() && AttackVars.CurrentAttackedFrames <= 0)
+            if (IsAttacked() && _currentAttackedFrames <= 0)
             {
+                if (OnAttack != null)
+                {
+                    OnAttack(_currentCombatDirection);
+                }
                 ChangeState(CombatStates.Idle);
                 _currentCombatDirection = NormalizedAttack;
                 return;
@@ -148,9 +153,7 @@ public class CombatController : MonoBehaviour {
             {
                 return;
             }
-                ChangeState(CombatStates.Attacking);
-                AttackVars.CurrentAttackingFrames = AttackVars.AttackingFrames;
-                _currentCombatDirection = NormalizedAttack;
+            DoAttack(NormalizedAttack);
         }
         else if (IsDefensive())
         {
@@ -158,13 +161,20 @@ public class CombatController : MonoBehaviour {
             {
                 return;
             }
-            ChangeState(CombatStates.Defending);
-            _currentCombatDirection = NormalizedAttack;
+            DoDefend(NormalizedAttack);
         }
     }
 
-    public static int GetFrameCount(float inp)
+    public void DoAttack(Direction direction)
     {
-        return Mathf.RoundToInt(inp/Time.fixedDeltaTime);
+        ChangeState(CombatStates.Attacking);
+        _currentAttackingFrames = _attackingFrames;
+        _currentCombatDirection = direction;
+    }
+
+    public void DoDefend(Direction direction)
+    {
+        ChangeState(CombatStates.Defending);
+        _currentCombatDirection = direction;
     }
 }

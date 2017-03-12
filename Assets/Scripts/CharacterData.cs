@@ -3,31 +3,10 @@
 [Serializable]
 public class CharacterData
 {
-    private int _maxHp;
-    public int MaxHp
-    {
-        get
-        {
-            return _maxHp;
-        }
-        set
-        {
-            _maxHp = value;
-        }
-    }
-
-    private int _hp;
-    public int Hp
-    {
-        get
-        {
-            return _hp;
-        }
-        set
-        {
-            _hp = value;
-        }
-    }
-
-
+    public int MaxHp;
+    public int Hp;
+    public float AttackSpeed;
+    public float AttackAgainSpeed;
+    public int MaxDamage;
+    public int MinDamage;
 }
