@@ -107,6 +107,7 @@ public class CombatController : MonoBehaviour
     {
         _currentMode = IsOffensive() ? CombatMode.Defensive : CombatMode.Offensive;
         _currentState = CombatStates.Idle;
+        _currentCombatDirection = Direction.None;
     }
 
     private void UpdateFrames()
