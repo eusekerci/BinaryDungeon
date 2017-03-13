@@ -133,18 +133,18 @@ public class CombatController : MonoBehaviour
     {
         if (IsOffensive())
         {
-            if (IsAttacking() && _currentAttackingFrames <= 0)
+            if (IsAttacking() && !IsAttacked() && _currentAttackingFrames <= 0)
             {
                 ChangeState(CombatStates.Attacked);
                 _currentAttackedFrames = _attackedFrames;
-                return;
-            }
-            if (IsAttacked() && _currentAttackedFrames <= 0)
-            {
                 if (OnAttack != null)
                 {
                     OnAttack(_currentCombatDirection);
                 }
+                return;
+            }
+            if (IsAttacked() && _currentAttackedFrames <= 0)
+            {
                 ChangeState(CombatStates.Idle);
                 _currentCombatDirection = NormalizedAttack;
                 return;

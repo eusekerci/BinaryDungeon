@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerInputs : MonoBehaviour {
 
     public CombatController Controller;
+    //Temporary
+    public bool p1;
 
     private Vector2 _combatInput;
 
@@ -24,7 +26,11 @@ public class PlayerInputs : MonoBehaviour {
     {
 #if UNITY_EDITOR
         _combatInput = KeyboardCheck();
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (p1 && Input.GetKeyDown(KeyCode.Space))
+        {
+            Controller.SwitchMode();
+        }
+        else if (!p1 && Input.GetKeyDown(KeyCode.RightControl))
         {
             Controller.SwitchMode();
         }
@@ -76,6 +82,13 @@ public class PlayerInputs : MonoBehaviour {
 
     private Vector2 KeyboardCheck()
     {
-        return new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
+        if (p1)
+        {
+            return new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
+        }
+        else
+        {
+            return new Vector2(Input.GetAxis("Horizontal2"), Input.GetAxis("Vertical2")).normalized;
+        }
     }
 }

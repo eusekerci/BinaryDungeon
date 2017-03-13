@@ -58,14 +58,14 @@ public class CombatManager : MonoBehaviour
 
     private void OnPlayerDamaged(Direction direction)
     {
-        int damage = Random.Range(_enemyData.MinDamage, _enemyData.MaxDamage);
+        int damage = Random.Range(_enemyData.MinDamage, _enemyData.MaxDamage+1);
         _playerData.Hp -= damage;
         Debug.Log("Player got " + damage + " damage from " + direction + ". Current HP: " + _playerData.Hp);
     }
 
     private void OnEnemyDamaged(Direction direction)
     {
-        int damage = Random.Range(_playerData.MinDamage, _playerData.MaxDamage);
+        int damage = Random.Range(_playerData.MinDamage, _playerData.MaxDamage+1);
         _enemyData.Hp -= damage;
         Debug.Log("Enemy got " + damage + " damage from " + direction + ". Current HP: " + _enemyData.Hp);
     }
