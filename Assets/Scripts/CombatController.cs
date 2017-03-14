@@ -98,9 +98,11 @@ public class CombatController : MonoBehaviour
         _currentState = newState;
     }
 
-    private void ChangeMode(CombatMode newMode)
+    public void ChangeMode(CombatMode newMode)
     {
         _currentMode = newMode;
+        _currentState = CombatStates.Idle;
+        _currentCombatDirection = Direction.None;
     }
 
     public void SwitchMode()
