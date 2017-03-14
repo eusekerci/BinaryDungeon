@@ -20,14 +20,27 @@ public class RandomAI : MonoBehaviour
     IEnumerator AITick()
     {
         int rand = Random.Range(0, 10);
-        if (rand < 3)
-            EnemyController.SwitchMode();
-        if (rand < 4)
-            EnemyController.NormalizedAttack = Direction.Left;
-        else if (rand < 8)
-            EnemyController.NormalizedAttack = Direction.Right;
-        else
-            EnemyController.NormalizedAttack = Direction.None;
+        if (rand < 2)
+        {
+            EnemyController.DefenseInput = false;
+            EnemyController.DoAttack(Direction.Left);
+        }
+        else if (rand < 4)
+        {
+            EnemyController.DefenseInput = false;
+            EnemyController.DoAttack(Direction.Right);
+        }
+        else if (rand < 7)
+        {
+            EnemyController.DefenseInput = true;
+            EnemyController.DoDefend(Direction.Left);
+            yield return new WaitForSeconds(1);
+        }
+        else if (rand < 10)
+        {
+            EnemyController.DefenseInput = true;
+            EnemyController.DoDefend(Direction.Right);
+        }
         yield return new WaitForSeconds(1);
         StartCoroutine(AITick());
     }

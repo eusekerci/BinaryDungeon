@@ -18,21 +18,38 @@ public class PlayerInputs : MonoBehaviour {
 	void Update ()
     {
 #if UNITY_EDITOR || UNITY_STANDALONE
-        _combatInput = KeyboardCheck();
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetButtonDown("AttackLeft"))
         {
-            Controller.SwitchMode();
+            Controller.DoAttack(Direction.Left);
         }
-#elif UNITY_ANDROID
-        _combatInput = SwipeCheck();
-#endif
+        else if (Input.GetButtonDown("AttackRight"))
+        {
+            Controller.DoAttack(Direction.Right);
+        }
+        else if (Input.GetButton("DefendLeft"))
+        {
+            Controller.DoDefend(Direction.Left);
+        }
+        else if (Input.GetButton("DefendRight"))
+        {
+            Controller.DoDefend(Direction.Right);
+        }
 
-        if (_combatInput.x > 0)
-            Controller.NormalizedAttack = Direction.Right;
-        else if (_combatInput.x < 0)
-            Controller.NormalizedAttack = Direction.Left;
-        else
-            Controller.NormalizedAttack = Direction.None;
+        //Controller.DefenseInput = Input.GetButton("DefendLeft") || Input.GetButton("DefendRight");
+
+#elif UNITY_ANDROID
+        //Controller.AttackInput = SwipeCheck().x;
+#endif
+    }
+
+    public void ActivateDefense()
+    {
+        Controller.DefenseInput = true;
+    }
+
+    public void ReleaseDefense()
+    {
+        Controller.DefenseInput = false;
     }
 
     private Vector2 SwipeCheck()
@@ -47,14 +64,6 @@ public class PlayerInputs : MonoBehaviour {
                     _isSwipeValid = true;
                     _startPos = touch.position;
                     _startTime = Time.time;
-                    if (_startPos.y < Screen.height / 2.0f)
-                    {
-                        Controller.ChangeMode(CombatController.CombatMode.Defensive);
-                    }
-                    else
-                    {
-                        Controller.ChangeMode(CombatController.CombatMode.Offensive);
-                    }
                     break;
                 case TouchPhase.Stationary:
                     _isSwipeValid = false;
@@ -75,10 +84,5 @@ public class PlayerInputs : MonoBehaviour {
         }
 
         return Vector2.zero;
-    }
-
-    private Vector2 KeyboardCheck()
-    {
-        return new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
     }
 }

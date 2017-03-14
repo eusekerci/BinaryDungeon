@@ -7,8 +7,8 @@ public class AnimationController : MonoBehaviour
     //Temporary
     public bool p1;
 
-    public CombatController _controller;
-    private CharacterData _characterData;
+    private CombatController _controller;
+    private Character _character;
     private Transform _weapon;
     private Transform _shield;
     private Transform _equipment;
@@ -17,8 +17,8 @@ public class AnimationController : MonoBehaviour
 
 	void Start ()
 	{
-	    _characterData = _controller.GetCharacterData();
-
+        _controller = GetComponent<CombatController>();
+        _character = GetComponent<Character>();
 	    _equipment = transform.GetChild(0);
 	    _weapon = _equipment.FindChild("Weapon");
 	    _shield = _equipment.FindChild("Shield");
@@ -59,7 +59,7 @@ public class AnimationController : MonoBehaviour
             {
                 _equipment.localPosition = new Vector3(0, p1 ? 1 : -1, 0);
             }
-            StartCoroutine(AttackingAnimationCoroutine(_characterData.AttackSpeed));
+            StartCoroutine(AttackingAnimationCoroutine(_character.Stats.AttackSpeed));
 	    }
 	    _weapon.gameObject.SetActive(_controller.IsOffensive());
         _shield.gameObject.SetActive(_controller.IsDefensive());

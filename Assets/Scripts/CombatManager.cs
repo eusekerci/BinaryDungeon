@@ -5,18 +5,14 @@ using UnityEngine;
 
 public class CombatManager : MonoBehaviour
 {
-    public GameObject Player;
-    public GameObject Enemy;
+    public GameObject PlayerObject;
+    public GameObject EnemyObject;
+
+    private Character _player;
+    private Character _enemy;
 
     private CombatController _playerController;
     private CombatController _enemyController;
-
-    private CharacterData _playerData;
-    private CharacterData _enemyData;
-
-	void Start ()
-	{
-	}
 
     private void OnPlayerAttacked(Direction direction)
     {
@@ -58,25 +54,25 @@ public class CombatManager : MonoBehaviour
 
     private void OnPlayerDamaged(Direction direction)
     {
-        int damage = Random.Range(_enemyData.MinDamage, _enemyData.MaxDamage+1);
-        _playerData.Hp -= damage;
-        Debug.Log("Player got " + damage + " damage from " + direction + ". Current HP: " + _playerData.Hp);
+        int damage = Random.Range(_enemy.Stats.MinDamage, _enemy.Stats.MaxDamage+1);
+        _player.Stats.CurrentHp -= damage;
+        Debug.Log("Player got " + damage + " damage from " + direction + ". Current HP: " + _player.Stats.CurrentHp);
     }
 
     private void OnEnemyDamaged(Direction direction)
     {
-        int damage = Random.Range(_playerData.MinDamage, _playerData.MaxDamage+1);
-        _enemyData.Hp -= damage;
-        Debug.Log("Enemy got " + damage + " damage from " + direction + ". Current HP: " + _enemyData.Hp);
+        int damage = Random.Range(_player.Stats.MinDamage, _player.Stats.MaxDamage+1);
+        _enemy.Stats.CurrentHp -= damage;
+        Debug.Log("Enemy got " + damage + " damage from " + direction + ". Current HP: " + _enemy.Stats.CurrentHp);
     }
 
     private void OnEnable()
     {
-        _playerController = Player.GetComponent<CombatController>();
-        _enemyController = Enemy.GetComponent<CombatController>();
+        _playerController = PlayerObject.GetComponent<CombatController>();
+        _enemyController = EnemyObject.GetComponent<CombatController>();
 
-        _playerData = _playerController.GetCharacterData();
-        _enemyData = _enemyController.GetCharacterData();
+        _player = PlayerObject.GetComponent<Character>();
+        _enemy = EnemyObject.GetComponent<Character>();
 
         _playerController.OnAttack += OnPlayerAttacked;
         _enemyController.OnAttack += OnEnemyAttacked;

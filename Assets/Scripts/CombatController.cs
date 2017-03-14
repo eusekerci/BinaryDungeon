@@ -27,19 +27,20 @@ public class CombatController : MonoBehaviour
     public enum CombatMode
     {
         Offensive,
-        Defensive
+        Defensive,
+        Recover
     }
 
-    [SerializeField] private CharacterData _playerData;
     [SerializeField] private CombatStates _currentState;
     [SerializeField] private CombatMode _currentMode;
-    [SerializeField] private Direction _currentCombatDirection;
+    [SerializeField] private Direction _currentAttackDirection;
+    [SerializeField] private Direction _currentDefenseDİrection;
+
+    public bool DefenseInput = false;
 
     public Action<Direction> OnAttack;
     public Action<Direction> OnDefense;
     public Action<Direction> OnDamaged;
-
-    public Direction NormalizedAttack;
 
     public const float NearZero = 0.01f;
 
@@ -83,14 +84,19 @@ public class CombatController : MonoBehaviour
         return _currentMode == CombatMode.Defensive;
     }
 
-    public Direction GetDirection()
+    public bool IsRecover()
     {
-        return _currentCombatDirection;
+        return _currentMode == CombatMode.Recover;
     }
 
-    public CharacterData GetCharacterData()
+    public Direction GetDirection()
     {
-        return _playerData;
+        if (IsOffensive())
+            return _currentAttackDirection;
+        else if (IsDefensive())
+            return _currentDefenseDİrection;
+
+        return Direction.None;
     }
 
     private void ChangeState(CombatStates newState)
@@ -101,15 +107,13 @@ public class CombatController : MonoBehaviour
     public void ChangeMode(CombatMode newMode)
     {
         _currentMode = newMode;
-        _currentState = CombatStates.Idle;
-        _currentCombatDirection = Direction.None;
     }
 
     public void SwitchMode()
     {
         _currentMode = IsOffensive() ? CombatMode.Defensive : CombatMode.Offensive;
         _currentState = CombatStates.Idle;
-        _currentCombatDirection = Direction.None;
+        _currentAttackDirection = Direction.None;
     }
 
     private void UpdateFrames()
@@ -120,64 +124,88 @@ public class CombatController : MonoBehaviour
 
     private void Start()
     {
-        _attackingFrames = GameManager.GetFrameCount(_playerData.AttackSpeed);
-        _attackedFrames = GameManager.GetFrameCount(_playerData.AttackAgainSpeed);
-        _currentMode = CombatMode.Offensive;
+        _attackingFrames = GameManager.GetFrameCount(GetComponent<Character>().Stats.AttackSpeed);
+        _attackedFrames = GameManager.GetFrameCount(GetComponent<Character>().Stats.AttackAgainSpeed);
+        _currentMode = CombatMode.Recover;
     }
 
     private void FixedUpdate()
     {
         UpdateFrames();
         UpdateState();
-        //Debug.Log(_currentState + "  " + _currentCombatDirection + "  " + _currentMode);
     }
 
     private void UpdateState()
     {
         if (IsOffensive())
         {
-            if (IsAttacking() && !IsAttacked() && _currentAttackingFrames <= 0)
+            if (IsAttacking() && _currentAttackingFrames <= 0)
             {
                 ChangeState(CombatStates.Attacked);
                 _currentAttackedFrames = _attackedFrames;
                 if (OnAttack != null)
                 {
-                    OnAttack(_currentCombatDirection);
+                    OnAttack(_currentAttackDirection);
                 }
                 return;
             }
-            if (IsAttacked() && _currentAttackedFrames <= 0)
+            else if (IsAttacked() && _currentAttackedFrames <= 0)
             {
-                ChangeState(CombatStates.Idle);
-                _currentCombatDirection = NormalizedAttack;
+                ChangeMode(CombatMode.Recover);
+                _currentAttackDirection = Direction.None;
                 return;
             }
-            if (NormalizedAttack == Direction.None || !IsWaiting())
-            {
-                return;
-            }
-            DoAttack(NormalizedAttack);
         }
         else if (IsDefensive())
         {
-            if (NormalizedAttack == Direction.None)
+            if (!DefenseInput)
             {
+                DoRecover();
                 return;
             }
-            DoDefend(NormalizedAttack);
         }
     }
 
     public void DoAttack(Direction direction)
     {
-        ChangeState(CombatStates.Attacking);
-        _currentAttackingFrames = _attackingFrames;
-        _currentCombatDirection = direction;
+        if (!IsOffensive())
+        {
+            ChangeMode(CombatMode.Offensive);
+            ChangeState(CombatStates.Attacking);
+            _currentAttackingFrames = _attackingFrames;
+            _currentAttackDirection = direction;
+        }
+    }
+
+    public void DoAttackLeft()
+    {
+        DoAttack(Direction.Left);
+    }
+
+    public void DoAttackRight()
+    {
+        DoAttack(Direction.Right);
     }
 
     public void DoDefend(Direction direction)
     {
+        ChangeMode(CombatMode.Defensive);
         ChangeState(CombatStates.Defending);
-        _currentCombatDirection = direction;
+        _currentDefenseDİrection = direction;
+    }
+
+    public void DoDefendLeft()
+    {
+        DoDefend(Direction.Left);
+    }
+
+    public void DoDefendRight()
+    {
+        DoDefend(Direction.Right);
+    }
+
+    public void DoRecover()
+    {
+        ChangeMode(CombatMode.Recover);
     }
 }
