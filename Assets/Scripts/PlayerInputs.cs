@@ -5,37 +5,26 @@ using UnityEngine;
 public class PlayerInputs : MonoBehaviour {
 
     public CombatController Controller;
-    //Temporary
-    public bool p1;
 
     private Vector2 _combatInput;
 
     //Swipe Variables
     private float _startTime;
     private Vector2 _startPos;
-    private readonly float _minSwipeDist = 0.1f;
-    private readonly float _maxSwipeTime = 1f;
+    private readonly float _minSwipeDist = 0.05f;
+    private readonly float _maxSwipeTime = 1.5f;
     private bool _isSwipeValid;
-
-	void Start ()
-    {
-		
-	}
 	
 	void Update ()
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
         _combatInput = KeyboardCheck();
-        if (p1 && Input.GetKeyDown(KeyCode.Space))
-        {
-            Controller.SwitchMode();
-        }
-        else if (!p1 && Input.GetKeyDown(KeyCode.RightControl))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             Controller.SwitchMode();
         }
 #elif UNITY_ANDROID
-    combatInput = SwipeCheck();
+        _combatInput = SwipeCheck();
 #endif
 
         if (_combatInput.x > 0)
@@ -58,6 +47,14 @@ public class PlayerInputs : MonoBehaviour {
                     _isSwipeValid = true;
                     _startPos = touch.position;
                     _startTime = Time.time;
+                    if (_startPos.y < Screen.height / 2.0f)
+                    {
+                        Controller.ChangeMode(CombatController.CombatMode.Defensive);
+                    }
+                    else
+                    {
+                        Controller.ChangeMode(CombatController.CombatMode.Offensive);
+                    }
                     break;
                 case TouchPhase.Stationary:
                     _isSwipeValid = false;
@@ -82,13 +79,6 @@ public class PlayerInputs : MonoBehaviour {
 
     private Vector2 KeyboardCheck()
     {
-        if (p1)
-        {
-            return new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
-        }
-        else
-        {
-            return new Vector2(Input.GetAxis("Horizontal2"), Input.GetAxis("Vertical2")).normalized;
-        }
+        return new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
     }
 }
