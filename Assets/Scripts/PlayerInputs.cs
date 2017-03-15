@@ -18,27 +18,30 @@ public class PlayerInputs : MonoBehaviour {
 	void Update ()
     {
 #if UNITY_EDITOR || UNITY_STANDALONE
-        if (Input.GetButtonDown("AttackLeft"))
+        if (Input.GetButton("DefendActivate"))
         {
-            Controller.DoAttack(Direction.Left);
+            Controller.DefenseInput = true;
+            if (Input.GetButton("DefendLeft"))
+            {
+                Controller.DoDefend(Direction.Left);
+            }
+            else if (Input.GetButton("DefendRight"))
+            {
+                Controller.DoDefend(Direction.Right);
+            }
         }
-        else if (Input.GetButtonDown("AttackRight"))
+        else
         {
-            Controller.DoAttack(Direction.Right);
+            Controller.DefenseInput = false;
+            if (Input.GetButtonDown("AttackLeft"))
+            {
+                Controller.DoAttack(Direction.Left);
+            }
+            else if (Input.GetButtonDown("AttackRight"))
+            {
+                Controller.DoAttack(Direction.Right);
+            }
         }
-        else if (Input.GetButton("DefendLeft"))
-        {
-            Controller.DoDefend(Direction.Left);
-        }
-        else if (Input.GetButton("DefendRight"))
-        {
-            Controller.DoDefend(Direction.Right);
-        }
-
-        //Controller.DefenseInput = Input.GetButton("DefendLeft") || Input.GetButton("DefendRight");
-
-#elif UNITY_ANDROID
-        //Controller.AttackInput = SwipeCheck().x;
 #endif
     }
 
