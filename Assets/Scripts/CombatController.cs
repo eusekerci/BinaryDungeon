@@ -38,6 +38,7 @@ public class CombatController : MonoBehaviour
 
     public bool DefenseInput = false;
 
+    public Action<Direction> OnAttackStarted;
     public Action<Direction> OnAttack;
     public Action<Direction> OnDefense;
     public Action<Direction> OnDamaged;
@@ -174,6 +175,10 @@ public class CombatController : MonoBehaviour
             ChangeState(CombatStates.Attacking);
             _currentAttackingFrames = _attackingFrames;
             _currentAttackDirection = direction;
+            if (OnAttackStarted != null)
+            {
+                OnAttackStarted(direction);
+            }
         }
     }
 

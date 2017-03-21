@@ -18,7 +18,15 @@ public class PlayerInputs : MonoBehaviour {
 	void Update ()
     {
 #if UNITY_EDITOR || UNITY_STANDALONE
-        if (Input.GetButton("DefendActivate"))
+        //Alternative if
+        //if (Input.mousePosition.y < Screen.height / 2.0f)
+
+        //Alternative if #2
+        //if (Input.GetButton("DefendLeft") || Input.GetButton("DefendRight"))
+
+        //if (Input.GetButton("DefendActivate"))
+        //if (Input.GetButton("DefendLeft") || Input.GetButton("DefendRight"))
+        if (Input.GetButton("DefendLeft") || Input.GetButton("DefendRight"))
         {
             Controller.DefenseInput = true;
             if (Input.GetButton("DefendLeft"))

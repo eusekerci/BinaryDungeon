@@ -40,16 +40,26 @@ public class CombatManager : MonoBehaviour
         }
     }
 
+    private void OnPlayerAttackStarted(Direction direction)
+    {
+        Debug.Log("Player Attacking from " + direction);
+        _player.Stats.CurrentStamina -= _player.Stats.AttackCost;
+    }
+
+    private void OnEnemyAttackStarted(Direction direction)
+    {
+        Debug.Log("Enemy Attacking from " + direction);
+        _enemy.Stats.CurrentStamina -= _enemy.Stats.AttackCost;
+    }
+
     private void OnPlayerDefended(Direction direction)
     {
         Debug.Log("Player Defended from " + direction);
-
     }
 
     private void OnEnemyDefended(Direction direction)
     {
         Debug.Log("Enemy Defended from " + direction);
-
     }
 
     private void OnPlayerDamaged(Direction direction)
@@ -82,6 +92,9 @@ public class CombatManager : MonoBehaviour
 
         _playerController.OnDamaged += OnPlayerDamaged;
         _enemyController.OnDamaged += OnEnemyDamaged;
+
+        _playerController.OnAttackStarted += OnPlayerAttackStarted;
+        _enemyController.OnAttackStarted += OnEnemyAttackStarted;
     }
 
     private void OnDisable()
@@ -94,5 +107,8 @@ public class CombatManager : MonoBehaviour
 
         _playerController.OnDamaged -= OnPlayerDamaged;
         _enemyController.OnDamaged -= OnEnemyDamaged;
+
+        _playerController.OnAttackStarted -= OnPlayerAttackStarted;
+        _enemyController.OnAttackStarted -= OnEnemyAttackStarted;
     }
 }
