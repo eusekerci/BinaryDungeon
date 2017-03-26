@@ -12,7 +12,7 @@ public class PlayerInputs : MonoBehaviour {
     private float _startTime;
     private Vector2 _startPos;
     private readonly float _minSwipeDist = 0.05f;
-    private readonly float _maxSwipeTime = 1.5f;
+    private readonly float _maxSwipeTime = 1f;
     private bool _isSwipeValid;
 	
 	void Update ()
@@ -51,6 +51,36 @@ public class PlayerInputs : MonoBehaviour {
             }
         }
 #endif
+#if UNITY_ANDROID
+        //_combatInput = SwipeCheck();
+        //if(_combatInput != Vector2.zero)
+        //{
+        //    if (_startPos.y > Screen.height / 2.0f)
+        //    {
+        //        Controller.DefenseInput = false;
+        //        if (_combatInput.x > 0)
+        //        {
+        //            Controller.DoAttack(Direction.Left);
+        //        }
+        //        else
+        //        {
+        //            Controller.DoAttack(Direction.Right);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Controller.DefenseInput = true;
+        //        if (_combatInput.x > 0)
+        //        {
+        //            Controller.DoDefend(Direction.Right);
+        //        }
+        //        else
+        //        {
+        //            Controller.DoDefend(Direction.Left);
+        //        }
+        //    }
+        //}
+#endif
     }
 
     public void ActivateDefense()
@@ -75,9 +105,6 @@ public class PlayerInputs : MonoBehaviour {
                     _isSwipeValid = true;
                     _startPos = touch.position;
                     _startTime = Time.time;
-                    break;
-                case TouchPhase.Stationary:
-                    _isSwipeValid = false;
                     break;
                 case TouchPhase.Ended:
                     float swipeTime = Time.time - _startTime;
