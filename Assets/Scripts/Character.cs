@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour {
-
+public class Character : MonoBehaviour
+{
     public CharacterData Stats;
 
     public GameObject EnemyObject;
@@ -29,11 +29,11 @@ public class Character : MonoBehaviour {
     {
         if (_playerController.IsRecover() && Stats.CurrentStamina < Stats.MaxStamina)
         {
-            StaminaIncrease(Stats.RecoverRate * Time.deltaTime);
+            StaminaIncrease(Stats.RecoverRate * Time.deltaTime); // TODO: deltaTime (not fixedDeltaTime) in FixedUpdate() ??
         }
         if (_playerController.IsDefending())
         {
-            StaminaDecrease(Stats.RecoverRate * Time.deltaTime);
+            StaminaDecrease(Stats.RecoverRate * Time.deltaTime); // TODO: deltaTime (not fixedDeltaTime) in FixedUpdate() ??
         }
 
         _playerController.CanAttack = Stats.CurrentStamina > Stats.AttackCost;
@@ -106,6 +106,25 @@ public class Character : MonoBehaviour {
     {
         int damage = Random.Range(_enemy.Stats.MinDamage, _enemy.Stats.MaxDamage + 1);
         Stats.CurrentHp -= damage;
+        StartCoroutine(DamagedEffectCoroutine());
+    }
+
+    private IEnumerator DamagedEffectCoroutine()
+    {
+        const float duration = 0.5f;
+        const float maxDisplacement = 0.1f;
+        var pos = transform.position;
+
+        // Shake it baby!
+        for (float f = 0; f < duration; f += Time.deltaTime)
+        {
+            transform.position = Vector3.Lerp(pos,
+                pos + new Vector3(Random.Range(-1f, 1f) * maxDisplacement, Random.Range(-1f, 1f) * maxDisplacement,
+                    Random.Range(-1f, 1f) * maxDisplacement), Time.deltaTime * 20);
+            yield return null;
+        }
+        transform.position = pos;
+
     }
 
     private void OnEnable()

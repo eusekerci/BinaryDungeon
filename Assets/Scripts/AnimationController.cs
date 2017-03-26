@@ -9,9 +9,13 @@ public class AnimationController : MonoBehaviour
 
     private CombatController _controller;
     private Character _character;
-    private Transform _weapon;
-    private Transform _shield;
+
+    [SerializeField]
     private Transform _equipment;
+    [SerializeField]
+    private Transform _weapon;
+    [SerializeField]
+    private Transform _shield;
 
     private bool isAttacking = false;
 
@@ -19,9 +23,9 @@ public class AnimationController : MonoBehaviour
 	{
         _controller = GetComponent<CombatController>();
         _character = GetComponent<Character>();
-	    _equipment = transform.GetChild(0);
-	    _weapon = _equipment.FindChild("Weapon");
-	    _shield = _equipment.FindChild("Shield");
+	    //_equipment = transform.GetChild(0);
+	    //_weapon = _equipment.FindChild("Weapon");
+	    //_shield = _equipment.FindChild("Shield");
 	}
 	
 	void Update ()
