@@ -37,10 +37,11 @@ public class CombatController : MonoBehaviour
     [SerializeField] private Direction _currentDefenseDİrection;
 
     public bool DefenseInput = false;
+    public bool CanAttack = true;
 
     public Action<Direction> OnAttackStarted;
     public Action<Direction> OnAttack;
-    public Action<Direction> OnDefense;
+    public Action<Direction> OnBlocked;
     public Action<Direction> OnDamaged;
 
     public const float NearZero = 0.01f;
@@ -171,6 +172,10 @@ public class CombatController : MonoBehaviour
     {
         if (!IsOffensive())
         {
+            if (!CanAttack)
+            {
+                return;
+            }
             ChangeMode(CombatMode.Offensive);
             ChangeState(CombatStates.Attacking);
             _currentAttackingFrames = _attackingFrames;
@@ -212,5 +217,6 @@ public class CombatController : MonoBehaviour
     public void DoRecover()
     {
         ChangeMode(CombatMode.Recover);
+        ChangeState(CombatStates.Idle);
     }
 }

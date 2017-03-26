@@ -41,8 +41,10 @@ public class GameManager : MonoBehaviour
 	
 	void Update ()
 	{
-	    P1HPText.text = P1.Stats.CurrentHp + "\n-\n" + P1.Stats.MaxHp;
-        P2HPText.text = P2.Stats.CurrentHp + "\n-\n" + P2.Stats.MaxHp;
+	    P1HPText.text = "HP \n" + (int)P1.Stats.CurrentHp + "-" + (int)P1.Stats.MaxHp + "\n";
+        P1HPText.text += "Stamina \n" + (int)P1.Stats.CurrentStamina + "-" + (int)P1.Stats.MaxStamina;
+        P2HPText.text = "HP \n" + (int)P2.Stats.CurrentHp + "-" + (int)P2.Stats.MaxHp + "\n";
+        P2HPText.text += "Stamina \n" + (int)P2.Stats.CurrentStamina + "-" + (int)P2.Stats.MaxStamina;
     }
 
     public static int GetFrameCount(float inp)

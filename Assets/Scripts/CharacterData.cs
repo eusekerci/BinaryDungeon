@@ -3,8 +3,8 @@
 [Serializable]
 public class CharacterData
 {
-    public int MaxHp;
-    public int CurrentHp;
+    public float MaxHp;
+    public float CurrentHp;
     public float AttackSpeed;
     public float AttackAgainSpeed;
     public int MaxDamage;
